@@ -39,9 +39,9 @@ pipeline {
 		}
 
         stage('confirm:deploy') {
-            when {
-                expression { params.destroy == false }
-            }
+            // when {
+            //     expression { params.destroy == false }
+            // }
             steps {
                 input(id: 'confirm', message: """
                     You choose to deploy:
@@ -93,16 +93,16 @@ pipeline {
             //         args '-e HOME=$WORKSPACE -e NPM_CONFIG_PREFIX=$WORKSPACE/.npm-global -v /etc/pki:/etc/pki -v /etc/passwd:/etc/passwd'
             //     }
             // }
-            when {
-                expression { params.destroy == true }
-            }
-			steps {
-				script {
-					sh '''
-                        terraform destroy -force
-                    '''
-				}
-			}
+            // when {
+            //     expression { params.destroy == true }
+            // }
+			// steps {
+			// 	script {
+			// 		sh '''
+            //             terraform destroy -force
+            //         '''
+			// 	}
+			// }
 		}
 	}
 
