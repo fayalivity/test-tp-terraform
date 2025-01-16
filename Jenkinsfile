@@ -18,19 +18,20 @@ pipeline {
 	stages {
 
 		stage('iac:terraform plan') {
-		    agent {
-                docker {
-                    image 'hashicorp/terraform'
-                    reuseNode true
-                    args '-e HOME=$WORKSPACE -e NPM_CONFIG_PREFIX=$WORKSPACE/.npm-global -v /etc/pki:/etc/pki -v /etc/passwd:/etc/passwd'
-                }
-            }
+		    // agent {
+            //     docker {
+            //         image 'hashicorp/terraform'
+            //         reuseNode true
+            //         args '-e HOME=$WORKSPACE -e NPM_CONFIG_PREFIX=$WORKSPACE/.npm-global -v /etc/pki:/etc/pki -v /etc/passwd:/etc/passwd'
+            //     }
+            // }
             // when {
             //     expression { params.destroy == true }
             // }
 			steps {
 				script {
 					sh '''
+                        terraform init
                         terraform plan
                     '''
 				}
@@ -52,19 +53,20 @@ pipeline {
         }
 
 		stage('iac:terraform apply') {
-		    agent {
-                docker {
-                    image 'hashicorp/terraform'
-                    reuseNode true
-                    args '-e HOME=$WORKSPACE -e NPM_CONFIG_PREFIX=$WORKSPACE/.npm-global -v /etc/pki:/etc/pki -v /etc/passwd:/etc/passwd'
-                }
-            }
+		    // agent {
+            //     docker {
+            //         image 'hashicorp/terraform'
+            //         reuseNode true
+            //         args '-e HOME=$WORKSPACE -e NPM_CONFIG_PREFIX=$WORKSPACE/.npm-global -v /etc/pki:/etc/pki -v /etc/passwd:/etc/passwd'
+            //     }
+            // }
             // when {
             //     expression { params.destroy == true }
             // }
 			steps {
 				script {
 					sh '''
+                        terraform init
                         terraform apply -auto-approve
                     '''
 				}
@@ -84,13 +86,13 @@ pipeline {
         // }
 
 		stage('iac:destroy') {
-		    agent {
-                docker {
-                    image 'hashicorp/terraform'
-                    reuseNode true
-                    args '-e HOME=$WORKSPACE -e NPM_CONFIG_PREFIX=$WORKSPACE/.npm-global -v /etc/pki:/etc/pki -v /etc/passwd:/etc/passwd'
-                }
-            }
+		    // agent {
+            //     docker {
+            //         image 'hashicorp/terraform'
+            //         reuseNode true
+            //         args '-e HOME=$WORKSPACE -e NPM_CONFIG_PREFIX=$WORKSPACE/.npm-global -v /etc/pki:/etc/pki -v /etc/passwd:/etc/passwd'
+            //     }
+            // }
             when {
                 expression { params.destroy == true }
             }
