@@ -8,7 +8,7 @@ pipeline {
 	parameters {
         // Parameters
         choice(name: 'env', choices: ['dev', /*'val', 'prod'*/], description: 'Environment to deploy to')
-        // booleanParam(name: 'TOGGLE', defaultValue: true, description: 'Toggle this value')
+        booleanParam(name: 'DESTROY', defaultValue: false, description: '/!\ Check if you want to destroy entire infrastructure')
 	}
 
     environment {
@@ -19,13 +19,15 @@ pipeline {
 
 	stages {
 		stage('iac:terraform plan') {
+            when {
+                expression { params.DESTROY == false }
+            }
 			steps {
 				script {
 					sh '''
                         # terraform init
-                        echo "ENV=${TF_VAR_env}"
                         terraform init \
-                            -backend-config="jrt-terraform-state-bucket-eu-west-1" \
+                            -backend-config="bucket=jrt-terraform-state-bucket-eu-west-1" \
                             -backend-config="key=terraform/${TF_VAR_env}/state" \
                             -backend-config="region=$AWS_DEFAULT_REGION" \
                             -backend-config="dynamodb_table=jrt-terraform-lock-table-eu-west-1-${TF_VAR_env}"
@@ -36,25 +38,67 @@ pipeline {
 		}
 
         stage('confirm:deploy') {
+            when {
+                expression { params.DESTROY == false }
+            }
             steps {
                 input(id: 'confirm', message: """
                     You choose to deploy:
                     - branch: ${env.GIT_BRANCH}
-                    Do you confirm the deployment
+                    - environment: ${env.TF_VAR_env}
+                    Do you confirm the deployment ?
+                """)
+            }
+        }
+
+        stage('confirm:destroy') {
+            when {
+                expression { params.DESTROY == true }
+            }
+            steps {
+                input(id: 'confirm', message: """
+                    You choose to destroy:
+                    - environment: ${env.TF_VAR_env}
+                    Do you confirm the removal ?
                 """)
             }
         }
 
 		stage('iac:terraform apply') {
+            when {
+                expression { params.DESTROY == false }
+            }
 			steps {
 				script {
 					sh '''
-                        terraform init
+                        terraform init \
+                            -backend-config="bucket=jrt-terraform-state-bucket-eu-west-1" \
+                            -backend-config="key=terraform/${TF_VAR_env}/state" \
+                            -backend-config="region=$AWS_DEFAULT_REGION" \
+                            -backend-config="dynamodb_table=jrt-terraform-lock-table-eu-west-1-${TF_VAR_env}"
                         terraform apply -auto-approve
                     '''
 				}
 			}
 		}
+
+        stage('iac:terraform destroy') {
+            when {
+                expression { params.DESTROY == true }
+            }
+            steps {
+                script {
+                    sh '''
+                        terraform init \
+                            -backend-config="bucket=jrt-terraform-state-bucket-eu-west-1" \
+                            -backend-config="key=terraform/${TF_VAR_env}/state" \
+                            -backend-config="region=$AWS_DEFAULT_REGION" \
+                            -backend-config="dynamodb_table=jrt-terraform-lock-table-eu-west-1-${TF_VAR_env}"
+                        terraform destroy -auto-approve
+                    '''
+                }
+            }
+        }
 	}
 
     post { 
