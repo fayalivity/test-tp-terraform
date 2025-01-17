@@ -20,7 +20,7 @@ variable "subnet_c_ip" {
 
 variable "ami_id" {
   type    = string
-  default = "ami-05576a079321f21f8"
+  default = "ami-0ef0975ebdd78b77b"
 }
 
 variable "instance_type" {
