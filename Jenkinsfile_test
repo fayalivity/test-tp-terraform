@@ -7,8 +7,8 @@ pipeline {
 
 	parameters {
         // Parameters
-        // choice(name: 'env', choices: ['dev', 'val', 'prod'], description: 'Environment to deploy to')
-        booleanParam(name: 'TOGGLE', defaultValue: true, description: 'Toggle this value')
+        choice(name: 'env', choices: ['dev', /*'val', 'prod'*/], description: 'Environment to deploy to')
+        // booleanParam(name: 'TOGGLE', defaultValue: true, description: 'Toggle this value')
 	}
 
     environment {
@@ -22,7 +22,13 @@ pipeline {
 			steps {
 				script {
 					sh '''
-                        terraform init
+                        # terraform init
+                        echo "ENV=${env.TF_VAR_env}"
+                        terraform init \
+                            -backend-config="jrt-terraform-state-bucket-eu-west-1" \
+                            -backend-config="key=terraform/${env.TF_VAR_env}/state" \
+                            -backend-config="region=$AWS_DEFAULT_REGION" \
+                            -backend-config="dynamodb_table=jrt-terraform-lock-table-eu-west-1-${env.TF_VAR_env}"
                         terraform plan
                     '''
 				}
