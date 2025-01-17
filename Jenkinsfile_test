@@ -7,7 +7,7 @@ pipeline {
 
 	parameters {
         // Parameters
-        booleanParam(name: 'TOGGLE', defaultValue: true, description: 'Toggle this value')
+        booleanParam(name: 'DESTROY', defaultValue: false, description: 'Check if you want to destroy entire infrastructure')
 	}
 
     environment {
@@ -17,6 +17,9 @@ pipeline {
 
 	stages {
 		stage('iac:terraform plan') {
+            when {
+                expression { params.DESTROY == false }
+            }
 			steps {
 				script {
 					sh '''
@@ -28,6 +31,9 @@ pipeline {
 		}
 
         stage('confirm:deploy') {
+            when {
+                expression { params.DESTROY == false }
+            }
             steps {
                 input(id: 'confirm', message: """
                     You choose to deploy:
@@ -37,12 +43,41 @@ pipeline {
             }
         }
 
+        stage('confirm:destroy') {
+            when {
+                expression { params.DESTROY == true }
+            }
+            steps {
+                input(id: 'confirm', message: """
+                    You choose to DESTROY
+                    Do you confirm the removal ?
+                """)
+            }
+        }
+
 		stage('iac:terraform apply') {
+            when {
+                expression { params.DESTROY == false }
+            }
 			steps {
 				script {
 					sh '''
                         terraform init
                         terraform apply -auto-approve
+                    '''
+				}
+			}
+		}
+
+		stage('iac:terraform destroy') {
+            when {
+                expression { params.DESTROY == true }
+            }
+			steps {
+				script {
+					sh '''
+                        terraform init
+                        terraform destroy -auto-approve
                     '''
 				}
 			}
