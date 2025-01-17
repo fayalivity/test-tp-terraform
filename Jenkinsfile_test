@@ -23,12 +23,12 @@ pipeline {
 				script {
 					sh '''
                         # terraform init
-                        echo "ENV=${env.TF_VAR_env}"
+                        echo "ENV=${TF_VAR_env}"
                         terraform init \
                             -backend-config="jrt-terraform-state-bucket-eu-west-1" \
-                            -backend-config="key=terraform/${env.TF_VAR_env}/state" \
+                            -backend-config="key=terraform/${TF_VAR_env}/state" \
                             -backend-config="region=$AWS_DEFAULT_REGION" \
-                            -backend-config="dynamodb_table=jrt-terraform-lock-table-eu-west-1-${env.TF_VAR_env}"
+                            -backend-config="dynamodb_table=jrt-terraform-lock-table-eu-west-1-${TF_VAR_env}"
                         terraform plan
                     '''
 				}
