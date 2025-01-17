@@ -85,25 +85,25 @@ pipeline {
         //     }
         // }
 
-		stage('iac:destroy') {
-		    // agent {
-            //     docker {
-            //         image 'hashicorp/terraform'
-            //         reuseNode true
-            //         args '-e HOME=$WORKSPACE -e NPM_CONFIG_PREFIX=$WORKSPACE/.npm-global -v /etc/pki:/etc/pki -v /etc/passwd:/etc/passwd'
-            //     }
-            // }
-            // when {
-            //     expression { params.destroy == true }
-            // }
-			// steps {
-			// 	script {
-			// 		sh '''
-            //             terraform destroy -force
-            //         '''
-			// 	}
-			// }
-		}
+		// stage('iac:destroy') {
+		//     // agent {
+        //     //     docker {
+        //     //         image 'hashicorp/terraform'
+        //     //         reuseNode true
+        //     //         args '-e HOME=$WORKSPACE -e NPM_CONFIG_PREFIX=$WORKSPACE/.npm-global -v /etc/pki:/etc/pki -v /etc/passwd:/etc/passwd'
+        //     //     }
+        //     // }
+        //     // when {
+        //     //     expression { params.destroy == true }
+        //     // }
+		// 	// steps {
+		// 	// 	script {
+		// 	// 		sh '''
+        //     //             terraform destroy -force
+        //     //         '''
+		// 	// 	}
+		// 	// }
+		// }
 	}
 
     post { 
