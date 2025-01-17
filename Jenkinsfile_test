@@ -5,13 +5,15 @@ pipeline {
 	    ansiColor('xterm')
     }
 
-	// parameters {
-    //     // Parameters
-	// }
+	parameters {
+        // Parameters
+        choice(name: 'env', choices: ['dev', 'val', 'prod'], description: 'Environment to deploy to')
+	}
 
     environment {
         // environment variables
         AWS_DEFAULT_REGION = 'eu-west-1'
+        TF_VAR_env = params.env
     }
 
 	stages {

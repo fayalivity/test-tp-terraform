@@ -2,7 +2,7 @@ resource "aws_vpc" "vpc" {
   cidr_block = var.vpc_cidr
 
   tags = {
-    Name = "monVpc"
+    Name = "${var.env}-monVpc"
   }
 }
 
@@ -13,7 +13,7 @@ resource "aws_subnet" "subnet_a" {
   availability_zone = "eu-west-1a"
 
   tags = {
-    Name = "publicA"
+    Name = "${var.env}-publicA"
   }
 }
 
@@ -23,7 +23,7 @@ resource "aws_subnet" "subnet_b" {
   availability_zone = "eu-west-1b"
 
   tags = {
-    Name = "publicB"
+    Name = "${var.env}-publicB"
   }
 }
 
@@ -33,7 +33,7 @@ resource "aws_subnet" "subnet_c" {
   availability_zone = "eu-west-1a"
 
   tags = {
-    Name = "privateC"
+    Name = "${var.env}-privateC"
   }
 }
 
@@ -48,7 +48,7 @@ resource "aws_route_table" "rtb_a" {
   }
 
   tags = {
-    Name = "public"
+    Name = "${var.env}-public"
   }
 }
 
@@ -61,17 +61,17 @@ resource "aws_route_table" "rtb_b" {
   }
 
   tags = {
-    Name = "private"
+    Name = "${var.env}-private"
   }
 }
 
 resource "aws_security_group" "secgr_bastion" {
   vpc_id      = aws_vpc.vpc.id
-  name        = "secgr-bastion"
-  description = "secgrp bastion"
+  name        = "${var.env}-secgr-bastion"
+  description = "${var.env}-secgrp bastion"
 
   tags = {
-    Name = "secgr_bastion"
+    Name = "${var.env}-secgr_bastion"
   }
 }
 
@@ -100,7 +100,7 @@ resource "aws_instance" "bastion" {
   iam_instance_profile        = "LabInstanceProfile"
 
   tags = {
-    Name = "bastion"
+    Name = "${var.env}-bastion"
   }
 }
 
@@ -125,11 +125,11 @@ resource "aws_route_table_association" "assoc_priv_subnet_c" {
 
 resource "aws_security_group" "secgr_app" {
   vpc_id      = aws_vpc.vpc.id
-  name        = "secgr-app"
-  description = "secgrp app"
+  name        = "${var.env}-secgr-app"
+  description = "${var.env}-secgrp app"
 
   tags = {
-    Name = "secgr_app"
+    Name = "${var.env}-secgr_app"
   }
 }
 
@@ -168,13 +168,13 @@ resource "aws_instance" "app" {
   user_data_replace_on_change = true
 
   tags = {
-    Name = "app"
+    Name = "${var.env}-app"
   }
 }
 
 resource "aws_eip" "eip" {
   tags = {
-    Name = "eip"
+    Name = "${var.env}-eip"
   }
 }
 
@@ -183,12 +183,12 @@ resource "aws_nat_gateway" "nat_gw" {
   subnet_id     = aws_subnet.subnet_a.id
 
   tags = {
-    Name = "app-natgw"
+    Name = "${var.env}-app-natgw"
   }
 }
 
 resource "aws_lb_target_group" "app_tg" {
-  name     = "app-tg"
+  name     = "${var.env}-app-tg"
   port     = 80
   protocol = "HTTP"
   vpc_id   = aws_vpc.vpc.id
@@ -202,11 +202,11 @@ resource "aws_lb_target_group_attachment" "attach_app_to_tg" {
 
 resource "aws_security_group" "secgr_alb" {
   vpc_id      = aws_vpc.vpc.id
-  name        = "secgr-alb"
-  description = "secgrp alb"
+  name        = "${var.env}-secgr-alb"
+  description = "${var.env}-secgrp alb"
 
   tags = {
-    Name = "secgr_alb"
+    Name = "${var.env}-secgr_alb"
   }
 }
 
@@ -225,7 +225,7 @@ resource "aws_vpc_security_group_egress_rule" "alb_to_anywhere" {
 }
 
 resource "aws_alb" "alb" {
-  name               = "alb-app"
+  name               = "${var.env}-alb-app"
   load_balancer_type = "application"
   security_groups    = [aws_security_group.secgr_alb.id]
   subnets            = [aws_subnet.subnet_a.id, aws_subnet.subnet_b.id]
