@@ -21,7 +21,7 @@ resource "aws_subnet" "subnet_b" {
   vpc_id            = aws_vpc.vpc.id
   cidr_block        = var.subnet_b_ip
   availability_zone = "eu-west-1b"
-
+# un commentaire là
   tags = {
     Name = "publicB"
   }
