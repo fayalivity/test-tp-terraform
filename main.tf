@@ -97,7 +97,7 @@ resource "aws_instance" "bastion" {
   key_name                    = data.aws_key_pair.keypair.key_name
   subnet_id                   = aws_subnet.subnet_a.id
   vpc_security_group_ids      = [aws_security_group.secgr_bastion.id]
-  iam_instance_profile        = "LabInstanceProfile"
+  iam_instance_profile        = "ec2-admin"
 
   tags = {
     Name = "bastion"
@@ -163,7 +163,7 @@ resource "aws_instance" "app" {
   associate_public_ip_address = false
   key_name                    = data.aws_key_pair.keypair.key_name
   subnet_id                   = aws_subnet.subnet_c.id
-  iam_instance_profile        = "LabInstanceProfile"
+  iam_instance_profile        = "ec2-admin"
   user_data                   = base64encode(file("./userdata.sh"))
   user_data_replace_on_change = true
 

@@ -5,9 +5,10 @@ pipeline {
 	    ansiColor('xterm')
     }
 
-	// parameters {
-    //     // Parameters
-	// }
+	parameters {
+        // Parameters
+        booleanParam(name: 'TOGGLE', defaultValue: true, description: 'Toggle this value')
+	}
 
     environment {
         // environment variables
