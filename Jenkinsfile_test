@@ -1,12 +1,12 @@
 pipeline {
     agent any
-	options {
-		// options
-	}
+	// options {
+	// 	// options
+	// }
 
-	parameters {
-        // Parameters
-	}
+	// parameters {
+    //     // Parameters
+	// }
 
     environment {
         // environment variables
