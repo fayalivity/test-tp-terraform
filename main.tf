@@ -4,9 +4,9 @@ module "network" {
   vpc_name               = "jrt"
   tag_env                = var.env
   tag_projet             = var.project
-  # expose_app             = true
-  # app_instance_id        = aws_instance.app.id
-  # app_instance_secgrp_id = aws_security_group.secgr_app.id
+  expose_app             = true
+  app_instance_id        = aws_instance.app.id
+  app_instance_secgrp_id = aws_security_group.secgr_app.id
 }
 
 resource "aws_security_group" "secgr_bastion" {
