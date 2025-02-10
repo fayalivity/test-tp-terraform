@@ -13,7 +13,7 @@ pipeline {
 
     environment {
         // environment variables
-        AWS_DEFAULT_REGION = 'us-east-1'
+        AWS_DEFAULT_REGION = 'eu-west-1'
         TF_VAR_env = "${params.env}"
     }
 
@@ -26,10 +26,10 @@ pipeline {
 				script {
 					sh '''
                         terraform init \
-                            -backend-config="bucket=jrt-terraform-state-bucket-us-east-1" \
+                            -backend-config="bucket=jrt-terraform-state-bucket-${AWS_DEFAULT_REGION}" \
                             -backend-config="key=terraform/${TF_VAR_env}/state" \
                             -backend-config="region=$AWS_DEFAULT_REGION" \
-                            -backend-config="dynamodb_table=jrt-terraform-lock-table-us-east-1-${TF_VAR_env}"
+                            -backend-config="dynamodb_table=jrt-terraform-lock-table-${AWS_DEFAULT_REGION}-${TF_VAR_env}"
                         terraform plan
                     '''
 				}
@@ -71,10 +71,10 @@ pipeline {
 				script {
 					sh '''
                         terraform init \
-                            -backend-config="bucket=jrt-terraform-state-bucket-us-east-1" \
+                            -backend-config="bucket=jrt-terraform-state-bucket-${AWS_DEFAULT_REGION}" \
                             -backend-config="key=terraform/${TF_VAR_env}/state" \
                             -backend-config="region=$AWS_DEFAULT_REGION" \
-                            -backend-config="dynamodb_table=jrt-terraform-lock-table-us-east-1-${TF_VAR_env}"
+                            -backend-config="dynamodb_table=jrt-terraform-lock-table-${AWS_DEFAULT_REGION}-${TF_VAR_env}"
                         terraform apply -auto-approve
                     '''
 				}
@@ -89,10 +89,10 @@ pipeline {
                 script {
                     sh '''
                         terraform init \
-                            -backend-config="bucket=jrt-terraform-state-bucket-us-east-1" \
+                            -backend-config="bucket=jrt-terraform-state-bucket-${AWS_DEFAULT_REGION}" \
                             -backend-config="key=terraform/${TF_VAR_env}/state" \
                             -backend-config="region=$AWS_DEFAULT_REGION" \
-                            -backend-config="dynamodb_table=jrt-terraform-lock-table-us-east-1-${TF_VAR_env}"
+                            -backend-config="dynamodb_table=jrt-terraform-lock-table-${AWS_DEFAULT_REGION}-${TF_VAR_env}"
                         terraform destroy -auto-approve
                     '''
                 }

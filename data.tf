@@ -1,3 +1,3 @@
-# data "aws_key_pair" "keypair" {
-#   key_name = "vockey"
-# }
+data "aws_key_pair" "keypair" {
+  key_name = "tp"
+}
