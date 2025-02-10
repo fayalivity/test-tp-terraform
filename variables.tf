@@ -35,5 +35,5 @@ variable "env" {
 
 variable "instance_profile" {
   type = string
-  default = "LabInstanceProfile"
+  default = "ec2-admin"
 }
