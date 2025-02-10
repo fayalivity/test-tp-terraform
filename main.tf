@@ -94,7 +94,7 @@ resource "aws_instance" "bastion" {
   #   security_groups             = [aws_security_group.secgr_bastion.id]
   instance_type               = var.instance_type
   associate_public_ip_address = true
-  key_name                    = data.aws_key_pair.keypair.key_name
+  key_name                    = aws_key_pair.keypair.key_name
   subnet_id                   = aws_subnet.subnet_a.id
   vpc_security_group_ids      = [aws_security_group.secgr_bastion.id]
   iam_instance_profile        = var.instance_profile
@@ -161,7 +161,7 @@ resource "aws_instance" "app" {
   vpc_security_group_ids      = [aws_security_group.secgr_app.id]
   instance_type               = var.instance_type
   associate_public_ip_address = false
-  key_name                    = data.aws_key_pair.keypair.key_name
+  key_name                    = aws_key_pair.keypair.key_name
   subnet_id                   = aws_subnet.subnet_c.id
   iam_instance_profile        = var.instance_profile
   user_data                   = base64encode(file("./userdata.sh"))
@@ -240,4 +240,10 @@ resource "aws_lb_listener" "http" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.app_tg.arn
   }
+}
+
+#KeyPair
+resource "aws_key_pair" "keypair" {
+  key_name = "myKey"
+  public_key = file("./myKey.pub")
 }

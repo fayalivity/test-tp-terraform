@@ -2,3 +2,4 @@
 *.tfstate
 *.lock.hcl
 deroule*
+*.pem
