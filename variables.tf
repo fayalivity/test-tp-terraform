@@ -32,3 +32,8 @@ variable "env" {
   type = string
   description = "environment to deploy to"
 }
+
+variable "instance_profile" {
+  type = string
+  default = "LabInstanceProfile"
+}
