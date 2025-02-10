@@ -1,9 +1,12 @@
 module "network" {
   source = "./modules/network"
 
-  vpc_name   = "jrt"
-  tag_env    = var.env
-  tag_projet = var.project
+  vpc_name               = "jrt"
+  tag_env                = var.env
+  tag_projet             = var.project
+  # expose_app             = true
+  # app_instance_id        = aws_instance.app.id
+  # app_instance_secgrp_id = aws_security_group.secgr_app.id
 }
 
 resource "aws_security_group" "secgr_bastion" {
@@ -31,8 +34,7 @@ resource "aws_vpc_security_group_egress_rule" "bastion_to_anywhere" {
 }
 
 resource "aws_instance" "bastion" {
-  ami = var.ami_id
-  #   security_groups             = [aws_security_group.secgr_bastion.id]
+  ami                         = var.ami_id
   instance_type               = var.instance_type
   associate_public_ip_address = true
   key_name                    = data.aws_key_pair.keypair.key_name
@@ -70,17 +72,8 @@ resource "aws_vpc_security_group_egress_rule" "app_to_anywhere" {
   ip_protocol       = "-1"
 }
 
-resource "aws_vpc_security_group_ingress_rule" "app_from_alb" {
-  security_group_id            = aws_security_group.secgr_app.id
-  from_port                    = 80
-  to_port                      = 80
-  ip_protocol                  = "tcp"
-  referenced_security_group_id = aws_security_group.secgr_alb.id
-}
-
 resource "aws_instance" "app" {
-  ami = var.ami_id
-  #   security_groups             = [ aws_security_group.secgr_app.id ]
+  ami                         = var.ami_id
   vpc_security_group_ids      = [aws_security_group.secgr_app.id]
   instance_type               = var.instance_type
   associate_public_ip_address = false
@@ -95,57 +88,5 @@ resource "aws_instance" "app" {
   }
 }
 
-resource "aws_lb_target_group" "app_tg" {
-  name     = "${var.env}-app-tg"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = module.network.vpc_id
-}
 
-resource "aws_lb_target_group_attachment" "attach_app_to_tg" {
-  target_id        = aws_instance.app.id
-  target_group_arn = aws_lb_target_group.app_tg.arn
-  port             = 80
-}
 
-resource "aws_security_group" "secgr_alb" {
-  vpc_id      = module.network.vpc_id
-  name        = "${var.env}-secgr-alb"
-  description = "${var.env}-secgrp alb"
-
-  tags = {
-    Name = "${var.env}-secgr_alb"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "http_from_anywhere" {
-  security_group_id = aws_security_group.secgr_alb.id
-  from_port         = 80
-  to_port           = 80
-  ip_protocol       = "tcp"
-  cidr_ipv4         = "0.0.0.0/0"
-}
-
-resource "aws_vpc_security_group_egress_rule" "alb_to_anywhere" {
-  security_group_id = aws_security_group.secgr_alb.id
-  ip_protocol       = "-1"
-  cidr_ipv4         = "0.0.0.0/0"
-}
-
-resource "aws_alb" "alb" {
-  name               = "${var.env}-alb-app"
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.secgr_alb.id]
-  subnets            = [module.network.public_a_subnet_id, module.network.public_b_subnet_id]
-}
-
-resource "aws_lb_listener" "http" {
-  load_balancer_arn = aws_alb.alb.arn
-  port              = 80
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.app_tg.arn
-  }
-}

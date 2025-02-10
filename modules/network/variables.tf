@@ -33,3 +33,21 @@ variable "subnet_c_ip" {
   type    = string
   default = "10.0.3.0/24"
 }
+
+variable "app_instance_id" {
+  type        = string
+  description = "Instance to attach to load balancer"
+  default     = ""
+}
+
+variable "expose_app" {
+  type        = bool
+  description = "Boolean: Expore or not application server"
+  default     = false
+}
+
+variable "app_instance_secgrp_id" {
+  type        = string
+  default     = ""
+  description = "Security group of the instance to attach to load balancer"
+}
